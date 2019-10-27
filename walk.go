@@ -33,7 +33,7 @@ func (s *Stack) walk(direction bool, walkFn WalkFunc) error {
 		}
 	} else {
 		for i := len(s.errs); i > 0; i-- {
-			if err := walkFn(i, s.errs[i]); err != nil {
+			if err := walkFn(i, s.errs[i-1]); err != nil {
 				return errWalkFunc(err)
 			}
 		}
@@ -52,11 +52,11 @@ type printFunc func(writer io.Writer, verb rune, err error)
 // walkPrint walks the error stack from last and write them to writer with verb and separator.
 func (s *Stack) walkPrint(writer io.Writer, verb rune, separator string, print printFunc) {
 	maxLevel := len(s.errs)
-	s.walk(false, func(level int, err error) error {
-		if level != maxLevel {
+	s.walk(false, func(l int, e error) error {
+		if l != maxLevel {
 			io.WriteString(writer, separator)
 		}
-		print(writer, verb, err)
+		print(writer, verb, e)
 		return nil
 	})
 }
