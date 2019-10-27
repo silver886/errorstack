@@ -131,3 +131,11 @@ func (s *Stack) Has(err error) bool {
 	}
 	return false
 }
+
+// Is reports whether the error stack is given error.
+func (s *Stack) Is(err error) bool {
+	if s.Root() == err {
+		return true
+	}
+	return false
+}
