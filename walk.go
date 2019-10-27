@@ -32,8 +32,8 @@ func (s *Stack) walk(direction bool, walkFn WalkFunc) error {
 			}
 		}
 	} else {
-		for i := len(s.errs) - 1; i >= 0; i-- {
-			if err := walkFn(i+1, s.errs[i]); err != nil {
+		for i := len(s.errs); i > 0; i-- {
+			if err := walkFn(i, s.errs[i]); err != nil {
 				return errWalkFunc(err)
 			}
 		}
