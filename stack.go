@@ -1,6 +1,9 @@
 package errorstack
 
-import "reflect"
+import (
+	"errors"
+	"reflect"
+)
 
 // Copy creates a copy of error stack.
 func (s *Stack) Copy() *Stack {
@@ -25,7 +28,7 @@ func (s *Stack) pop() error {
 	return err
 }
 
-// Pop pops errors off the stack.
+// Pop pops errors off the stack, errs start from last.
 func (s *Stack) Pop(errs []error) *Stack {
 	var tmpErrs []error
 	for range errs {
@@ -135,6 +138,52 @@ func (s *Stack) Has(err error) bool {
 // Is reports whether the error stack is given error.
 func (s *Stack) Is(err error) bool {
 	if s.Root() == err {
+		return true
+	}
+	return false
+}
+
+var errNotMatch = errors.New("skip this error")
+
+// FirstStack gets the first level of given error stack appears.
+// If not found, will return 0.
+func (s *Stack) FirstStack(err *Stack) int {
+	level, slevel, errlevel := 0, len(s.errs), len(err.errs)
+	s.walk(true, func(ls int, es error) error {
+		if slevel < errlevel || err.walk(true, func(l int, e error) error {
+			if s.errs[ls+l-2] == e {
+				if l == 1 {
+					level = ls
+				}
+				return nil
+			}
+			return errNotMatch
+		}) == nil {
+			return ErrSkip
+		}
+		level = 0
+		slevel--
+		return nil
+	})
+	return level
+}
+
+// HasStack reports whether the error stack contains given error stack.
+func (s *Stack) HasStack(err *Stack) bool {
+	if l := s.FirstStack(err); l > 0 {
+		return true
+	}
+	return false
+}
+
+// IsStack reports whether the error stack is given error stack.
+func (s *Stack) IsStack(err *Stack) bool {
+	if err.walk(true, func(l int, e error) error {
+		if s.errs[l-1] == e {
+			return nil
+		}
+		return errNotMatch
+	}) == nil {
 		return true
 	}
 	return false
