@@ -18,6 +18,14 @@ func New(errs ...error) *Stack {
 	}
 }
 
+// Convert returns a converted error stack.
+func Convert(err error) *Stack {
+	if e, ok := err.(*Stack); ok {
+		return e
+	}
+	return nil
+}
+
 // Error is the implementation of error.
 func (s *Stack) Error() string {
 	var buf strings.Builder
