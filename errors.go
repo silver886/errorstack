@@ -62,3 +62,8 @@ func (s *Stack) Format(state fmt.State, verb rune) {
 		})
 	}
 }
+
+// MarshalJSON is the implementation of JSON marshaler.
+func (s *Stack) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + s.Error() + `"`), nil
+}
