@@ -23,7 +23,7 @@ func Convert(err error) *Stack {
 	if e, ok := err.(*Stack); ok {
 		return e
 	}
-	return nil
+	return New(err)
 }
 
 // Error is the implementation of error.
