@@ -82,19 +82,19 @@ func (s *Stack) Last() error {
 func (s *Stack) Find(err error, max int) []int {
 	if err != nil && max != 0 {
 		var levels []int
-		s.Walk(func(l int, e error) error {
+		s.walk(true, func(l int, e error) error {
 			if len(levels) == max {
 				return ErrSkip
 			}
 			for {
 				if isComparable := reflect.TypeOf(e).Comparable(); isComparable {
 					if e == err {
-						levels = append(levels, l+1)
+						levels = append(levels, l)
 						return nil
 					}
 				} else if eIs, ok := e.(interface{ Is(error) bool }); ok {
 					if eIs.Is(err) {
-						levels = append(levels, l+1)
+						levels = append(levels, l)
 						return nil
 					}
 				}
