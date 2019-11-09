@@ -12,6 +12,14 @@ func (s *Stack) Copy() *Stack {
 	}
 }
 
+// Attach pushes error stack into the stack.
+func (s *Stack) Attach(errs ...error) *Stack {
+	for _, err := range errs {
+		s.errs = append(s.errs, Convert(err).errs...)
+	}
+	return s
+}
+
 // Push pushes errors into the stack.
 func (s *Stack) Push(errs ...error) *Stack {
 	s.errs = append(s.errs, errs...)
