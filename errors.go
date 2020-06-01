@@ -30,7 +30,7 @@ func Convert(err error) *Stack {
 func (s *Stack) Error() string {
 	var buf strings.Builder
 	s.walkPrint(&buf, 'v', ": ", func(w io.Writer, v rune, e error) {
-		io.WriteString(w, e.Error())
+		fmt.Fprint(w, e)
 	})
 	return buf.String()
 }
@@ -46,7 +46,7 @@ func (s *Stack) Format(state fmt.State, verb rune) {
 						formatter.Format(state, v)
 					}
 				} else {
-					io.WriteString(w, e.Error())
+					fmt.Fprint(w, e)
 				}
 			})
 			return
@@ -54,7 +54,7 @@ func (s *Stack) Format(state fmt.State, verb rune) {
 		fallthrough
 	case 's':
 		s.walkPrint(state, verb, ": ", func(w io.Writer, v rune, e error) {
-			io.WriteString(w, e.Error())
+			fmt.Fprint(w, e)
 		})
 	case 'q':
 		s.walkPrint(state, verb, ": ", func(w io.Writer, v rune, e error) {
@@ -65,5 +65,5 @@ func (s *Stack) Format(state fmt.State, verb rune) {
 
 // MarshalJSON is the implementation of JSON marshaler.
 func (s *Stack) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + s.Error() + `"`), nil
+	return []byte(`"` + fmt.Sprint(s) + `"`), nil
 }
